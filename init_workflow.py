@@ -1,0 +1,68 @@
+import os, pathlib, textwrap
+
+ROOT = pathlib.Path(__file__).resolve().parent
+WF_DIR = ROOT / ".github" / "workflows"
+WF_DIR.mkdir(parents=True, exist_ok=True)
+yml = textwrap.dedent(
+    """
+name: Build and Deploy
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Build site
+        env:
+          BASE_URL: ${{ secrets.BASE_URL }}
+          ADS_TXT_LINE: ${{ secrets.ADS_TXT_LINE }}
+        run: |
+          python scripts/build_site.py
+          test -f dist/index.html
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+"""
+).strip()
+
+(WF_DIR / "build.yml").write_text(yml, encoding="utf-8")
+print(f"Wrote {WF_DIR / 'build.yml'}")
