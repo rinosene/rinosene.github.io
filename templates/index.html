@@ -1,15 +1,10 @@
 # templates/index.html
 {% extends "base.html" %}
 {% block content %}
-  {% set _ = namespace(_title_set=0) %}
-  {% set title = "Curated by Rino · AutoSpec" %}
-  <script>
-    // 템플릿 변수와 무관하게 브라우저 탭 타이틀을 보장
-    document.title = "Curated by Rino · AutoSpec";
-  </script>
+  <script>document.title = "Curated by Rino · AutoSpec";</script>
 
   <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap">
-    <h1 style="margin:0; font-size:28px">Curated by Rino · AutoSpec</h1>
+    <h1 class="title-beige" style="margin:0; font-size:28px">Curated by Rino · AutoSpec</h1>
     <span class="badge">총 {{ pages|length }} 페이지</span>
   </div>
   <p class="muted" style="margin-top:6px">CSV에서 생성된 최신 가이드를 모았다. 필요한 항목을 골라 확인하면 된다.</p>
@@ -21,8 +16,12 @@
     {% for p in pages %}
     <article style="border:1px solid var(--bd); border-radius:14px; background:var(--card); overflow:hidden">
       <a href="{{ p.path }}" style="display:block; padding:18px; text-decoration:none">
-        <h2 style="margin:4px 0 8px; font-size:18px; line-height:1.35">{{ p.title }}</h2>
-        <p class="muted" style="margin:0">{{ p.desc }}</p>
+        <!-- 3번 문제: 타이틀 색상을 진한 베이지로 -->
+        <h2 class="title-beige" style="margin:4px 0 8px; font-size:18px; line-height:1.35">{{ p.title }}</h2>
+        <!-- 3번 문제: 문체를 서술형으로 보정 -->
+        <p class="muted" style="margin:0">
+          {{ p.desc | replace('했어','했다') | replace('이야','이다') | replace('해줘','해야 한다') }}
+        </p>
       </a>
       <div style="padding:0 18px 18px">
         <a class="btn" href="{{ p.path }}" aria-label="{{ p.title }} 상세 보기">상세 보기</a>

@@ -3,15 +3,15 @@
 {% block content %}
 
   <header aria-label="문서 머리말" style="margin-bottom:10px">
-    <h1 style="margin:0 0 6px; font-size:28px; line-height:1.25">{{ h1 }}</h1>
-    <p class="muted" style="margin:0">{{ subtitle }}</p>
+    <h1 class="title-beige" style="margin:0 0 6px; font-size:28px; line-height:1.25">{{ h1 }}</h1>
+    <p class="muted" style="margin:0">{{ subtitle | replace('했어','했다') }}</p>
   </header>
 
   <div class="hr"></div>
 
   <section class="grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); align-items:start">
     <article style="border:1px solid var(--bd); border-radius:12px; padding:16px; background:var(--card)">
-      <h2 style="margin:0 0 10px; font-size:18px">핵심 요약</h2>
+      <h2 class="title-beige" style="margin:0 0 10px; font-size:18px">핵심 요약</h2>
       <p style="margin:0 0 10px">
         <span class="badge" aria-label="키워드">키워드</span> {{ item.keyword }}<br/>
         <span class="badge" aria-label="속성">속성</span> {{ item.attribute }}<br/>
@@ -23,7 +23,7 @@
     </article>
 
     <aside style="border:1px solid var(--bd); border-radius:12px; padding:16px; background:var(--card)">
-      <h2 style="margin:0 0 10px; font-size:18px">추천 구매처</h2>
+      <h2 class="title-beige" style="margin:0 0 10px; font-size:18px">추천 구매처</h2>
       {% if affiliate_url %}
         <a class="btn primary" href="{{ affiliate_url }}" rel="nofollow sponsored noopener" target="_blank"
            aria-label="추천 상품 보러가기 (새 창)">
@@ -41,9 +41,9 @@
   <div class="hr"></div>
 
   <section style="border:1px solid var(--bd); border-radius:12px; padding:16px; background:var(--card)">
-    <h2 style="margin:0 0 10px; font-size:18px">왜 이 선택이 좋은가?</h2>
+    <h2 class="title-beige" style="margin:0 0 10px; font-size:18px">왜 이 선택이 좋은가?</h2>
     <p style="margin:0">
-      {{ body_paragraph }}
+      {{ body_paragraph | replace('했어','했다') | replace('이야','이다') | replace('해줘','해야 한다') }}
     </p>
     <ul class="muted" style="margin:12px 0 0; padding-left:18px; font-size:14px">
       <li>사용 환경과 예산에 따라 선택은 달라질 수 있다.</li>
@@ -54,7 +54,7 @@
   <div class="hr"></div>
 
   <section style="border:1px solid var(--bd); border-radius:12px; padding:16px; background:var(--card)">
-    <h2 style="margin:0 0 10px; font-size:18px">자주 묻는 질문</h2>
+    <h2 class="title-beige" style="margin:0 0 10px; font-size:18px">자주 묻는 질문</h2>
 
     <details style="border:1px solid var(--bd); border-radius:10px; padding:12px; margin-bottom:10px">
       <summary><strong>{{ faq_q1 }}</strong></summary>
