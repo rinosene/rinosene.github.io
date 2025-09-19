@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ title }} | AutoSpec</title>
+  <meta name="description" content="{{ description }}"/>
+  <link rel="canonical" href="{{ canonical }}"/>
+  <script type="application/ld+json">
+  {{ schema_json | safe }}
+  </script>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;line-height:1.6;margin:0;padding:0;background:#f9fafb;color:#0f172a}
+    header,footer{background:#0f172a;color:#fff;padding:16px 20px}
+    main{max-width:900px;margin:0 auto;padding:24px 20px;background:#fff}
+    a{color:#2563eb;text-decoration:none}
+    .card{border:1px solid #e5e7eb;border-radius:12px;padding:16px;margin:12px 0;background:#ffffff}
+    .muted{color:#64748b;font-size:14px}
+    .grid{display:grid;gap:12px}
+    .grid-2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+    .badge{display:inline-block;background:#eef2ff;color:#3730a3;border-radius:999px;padding:4px 10px;font-size:12px;margin-right:8px}
+    .btn{display:inline-block;border:1px solid #1f2937;padding:10px 14px;border-radius:10px}
+  </style>
+</head>
+<body>
+<header>
+  <strong>AutoSpec</strong> — 사양·호환·규격 한눈에
+</header>
+<main>
+  {% block content %}{% endblock %}
+</main>
+<footer>
+  <div class="muted">ⓒ {{ year }} AutoSpec · 본 문서에는 제휴 링크가 포함될 수 있어. 구매 시 일정 비율의 수수료를 받을 수 있어.</div>
+</footer>
+</body>
+</html>

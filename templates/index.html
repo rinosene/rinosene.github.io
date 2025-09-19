@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>AutoSpec — 사양·호환·규격 모음</h1>
+<p class="muted">긴 글 대신 필요한 정보만. 아래 목록에서 찾아봐.</p>
+<ul>
+{% for p in pages %}
+  <li><a href="{{ p['path'] }}">{{ p['title'] }}</a> <span class="muted">— {{ p['desc'] }}</span></li>
+{% endfor %}
+</ul>
+{% endblock %}

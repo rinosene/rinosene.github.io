@@ -1,0 +1,54 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Init: venv & deps",
+      "type": "shell",
+      "command": "python -m venv .venv && source .venv/bin/activate && python -m pip install --upgrade pip && pip install Jinja2 Pillow pandas pyyaml unidecode",
+      "windows": {
+        "command": "python -m venv .venv; .\\.venv\\Scripts\\Activate.ps1; python -m pip install --upgrade pip; pip install Jinja2 Pillow pandas pyyaml unidecode"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Generate: CSV from seeds",
+      "type": "shell",
+      "command": "source .venv/bin/activate && python tools/generate_csv.py",
+      "windows": {
+        "command": ".\\.venv\\Scripts\\Activate.ps1; python tools\\generate_csv.py"
+      },
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Generate: OG images",
+      "type": "shell",
+      "command": "source .venv/bin/activate && python scripts/gen_og.py",
+      "windows": {
+        "command": ".\\.venv\\Scripts\\Activate.ps1; python scripts\\gen_og.py"
+      },
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Build: Site",
+      "type": "shell",
+      "command": "source .venv/bin/activate && python scripts/build_site.py",
+      "windows": {
+        "command": ".\\.venv\\Scripts\\Activate.ps1; python scripts\\build_site.py"
+      },
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Full Pipeline",
+      "type": "shell",
+      "command": "source .venv/bin/activate && python tools/generate_csv.py && python scripts/gen_og.py && python scripts/build_site.py",
+      "windows": {
+        "command": ".\\.venv\\Scripts\\Activate.ps1; python tools\\generate_csv.py; python scripts\\gen_og.py; python scripts\\build_site.py"
+      },
+      "group": "build",
+      "problemMatcher": []
+    }
+  ]
+}

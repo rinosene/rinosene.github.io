@@ -1,0 +1,35 @@
+{
+  // 파일/인코딩/개행
+  "files.encoding": "utf8",
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+
+  // 편집기
+  "editor.wordWrap": "on",
+  "editor.formatOnSave": true,
+  "editor.rulers": [100],
+  "workbench.iconTheme": "material-icon-theme",
+
+  // 마크다운
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "markdownlint.config": {
+    "MD013": false, // 줄 길이 경고 완화
+    "MD033": false  // HTML 허용
+  },
+
+  // Python & 가상환경
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+  "python.analysis.typeCheckingMode": "basic",
+  "python.formatting.provider": "black",
+  "black-formatter.args": ["--line-length", "100"],
+
+  // CSV 보기
+  "rainbow-csv.enable_separator_autodetection": true,
+
+  // 터미널
+  "terminal.integrated.defaultProfile.linux": "bash",
+  "terminal.integrated.defaultProfile.osx": "bash",
+  "terminal.integrated.defaultProfile.windows": "Command Prompt"
+}

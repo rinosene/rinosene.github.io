@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ h1 }}</h1>
+<p class="muted">{{ subtitle }}</p>
+
+<div class="grid grid-2">
+  <div class="card">
+    <h3>핵심 요약</h3>
+    <ul>
+      <li><span class="badge">키워드</span>{{ item.keyword }}</li>
+      <li><span class="badge">속성</span>{{ item.attribute }}</li>
+      <li><span class="badge">권장</span>{{ item.modifier }}</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>추천 구매처</h3>
+    <p>
+      <a class="btn" href="{{ affiliate_url }}" rel="nofollow sponsored" target="_blank">지금 상품 보기</a><br/>
+      <span class="muted">제휴 링크. 가격·재고는 변경될 수 있어.</span>
+    </p>
+  </div>
+</div>
+
+<div class="card">
+  <h3>설명</h3>
+  <p>{{ body_paragraph }}</p>
+</div>
+
+<div class="card">
+  <h3>FAQ</h3>
+  <details><summary>{{ faq_q1 }}</summary><p>{{ faq_a1 }}</p></details>
+  <details><summary>{{ faq_q2 }}</summary><p>{{ faq_a2 }}</p></details>
+</div>
+
+<p class="muted">문서 업데이트: {{ updated }}</p>
+{% endblock %}
