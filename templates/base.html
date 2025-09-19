@@ -22,12 +22,9 @@
   <style>
     :root{
       --card:#ffffff; --muted:#6b7280; --text:#0f172a; --bd:#e5e7eb;
-      --p:#2563eb; --p-hover:#1d4ed8;
       --radius:16px; --space:18px; --max:980px;
-
-      /* cozy beige palette */
-      --beige:#a39683;         /* 도트/포인트 */
-      --beige-strong:#8b7a66;  /* 타이틀 등 진한 베이지 */
+      /* ✅ Cozy beige & accent */
+      --accent:#544F44;       /* 포인트 색 (도트/타이틀/항목) */
     }
     *{box-sizing:border-box}
     html,body{height:100%}
@@ -38,8 +35,8 @@
       background:#e6e4e1;
       background:linear-gradient(90deg, rgba(230,228,225,1) 0%, rgba(163,150,131,1) 88%, rgba(150,137,122,1) 100%);
     }
-    a{color:var(--p); text-decoration:none}
-    a:hover{color:var(--p-hover)}
+    a{color:var(--accent); text-decoration:none}
+    a:hover{opacity:.9}
     .container{max-width:var(--max); margin:0 auto; padding:28px var(--space)}
     .shadow{box-shadow:0 10px 30px rgba(0,0,0,.08)}
     header.site{
@@ -47,34 +44,31 @@
       background:rgba(255,255,255,.6);
       border-bottom:1px solid var(--bd); z-index:10;
     }
-    .brand{display:flex; align-items:center; gap:10px; font-weight:700; color:var(--text)}
-    .brand .dot{width:10px; height:10px; border-radius:999px; background:var(--beige)}
+    .brand{display:flex; align-items:center; gap:10px; font-weight:900; color:var(--accent)}
+    .brand .dot{width:10px; height:10px; border-radius:999px; background:var(--accent)}
     nav a{margin-right:14px; color:var(--muted)}
-    nav a.active, nav a:hover{color:var(--text)}
-    main.card{
-      background:var(--card); border:1px solid var(--bd); border-radius:var(--radius);
-    }
+    nav a.active, nav a:hover{color:var(--accent)}
+    main.card{background:var(--card); border:1px solid var(--bd); border-radius:var(--radius)}
     .muted{color:var(--muted)}
     .badge{display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; border:1px solid var(--bd); color:var(--muted); font-size:12px}
-    .btn{display:inline-flex; align-items:center; justify-content:center; padding:12px 16px; border-radius:12px; border:1px solid var(--bd); color:var(--text)}
-    .btn.primary{background:var(--p); border-color:var(--p); color:#fff}
-    .btn.primary:hover{background:var(--p-hover); border-color:var(--p-hover)}
+    .btn{display:inline-flex; align-items:center; justify-content:center; padding:12px 16px; border-radius:12px; border:1px solid var(--bd); color:var(--text); background:#fff}
+    .btn.primary{background:var(--accent); border-color:var(--accent); color:#fff}
+    .btn.primary:hover{filter:brightness(.95)}
     .grid{display:grid; gap:16px}
     .grid.cols-3{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
     .card-inner{padding:24px}
     .hr{height:1px; background:var(--bd); border:0; margin:22px 0}
     footer.site{color:var(--muted); font-size:14px; border-top:1px solid var(--bd); padding:20px 0; margin-top:28px}
-    code,kbd,pre{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:90%}
     img{max-width:100%; height:auto; border-radius:12px}
-    /* 카드 내 타이틀을 진한 베이지로 */
-    .title-beige{color:var(--beige-strong)}
+    /* 타이틀/항목 포인트 컬러 */
+    .title-accent{color:var(--accent)}
   </style>
 </head>
 <body>
   <header class="site">
     <div class="container" style="display:flex; align-items:center; justify-content:space-between;">
-      <!-- 2번 문제: 베이지 도트 + Rinoverse 로고 텍스트 -->
-      <div class="brand"><span class="dot"></span> <span>Rinoverse</span></div>
+      <!-- 브랜드: 베이지 도트 + Rinoverse(블랙 굵기/포인트 컬러) -->
+      <div class="brand"><span class="dot"></span><span>Rinoverse</span></div>
       <nav class="muted" aria-label="주요 링크">
         <a href="/" class="active">홈</a>
         <a href="/sitemap.xml">사이트맵</a>
@@ -90,7 +84,7 @@
       </div>
     </main>
     <footer class="site">
-      <!-- 4번 문제: 네이밍 통일 -->
+      <!-- 네이밍 통일 -->
       <div>© {{ year }} Rinoverse · 일부 추천 링크는 제휴 링크일 수 있습니다.</div>
     </footer>
   </div>
