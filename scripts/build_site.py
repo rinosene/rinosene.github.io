@@ -1,17 +1,29 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+AutoSpec site builder
+- Generates detail pages from data/items.csv
+- Writes index.html
+- Writes ads.txt / robots.txt
+- Writes sitemap.xml (with XML declaration + RFC3339 UTC lastmod)
+- Optional soft-redirects from data/redirects.csv (old_slug,new_slug)
+  -> Creates OUT/{old}.html containing a meta refresh to the new URL
+  -> Targets only (new URLs) are listed in the sitemap
+"""
 import os
 import csv
 import json
 import datetime
 import pathlib
+from typing import List, Dict
 from xml.etree.ElementTree import Element, SubElement, tostring
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 # ── Paths ────────────────────────────────────────────────────────────────────
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 DATA = ROOT / "data" / "items.csv"
-CONF = ROOT / "config" / "affiliates.json"
+REDIRECTS = ROOT / "data" / "redirects.csv"  # optional: old_slug,new_slug
+CONF = ROOT / "config" / "affiliates.json"  # optional
 TPL = ROOT / "templates"
 OUT = ROOT / "dist"
 
@@ -21,7 +33,7 @@ def ensure_dir(p: pathlib.Path) -> None:
     os.makedirs(p, exist_ok=True)
 
 
-def read_json_safe(path: pathlib.Path) -> dict:
+def read_json_safe(path: pathlib.Path) -> Dict:
     if not path.exists():
         return {}
     try:
@@ -30,9 +42,18 @@ def read_json_safe(path: pathlib.Path) -> dict:
         return {}
 
 
+def now_utc_iso() -> str:
+    # RFC3339 / ISO-8601 UTC like 2025-09-19T05:12:00Z
+    return datetime.datetime.utcnow().replace(microsecond=0).isoformat() + "Z"
+
+
+def norm_base_url(url: str) -> str:
+    return url[:-1] if url.endswith("/") else url
+
+
 def load_affiliate(merchant: str, slug: str) -> str:
     """
-    affiliates.json 예시:
+    config/affiliates.json example:
     {
       "amazon": {
         "deeplink_base": "https://amazon.com/dp/{slug}",
@@ -50,7 +71,7 @@ def load_affiliate(merchant: str, slug: str) -> str:
     return base
 
 
-def schema_org_article(title: str, desc: str, url: str) -> dict:
+def schema_org_article(title: str, desc: str, url: str) -> Dict:
     return {
         "@context": "https://schema.org",
         "@type": "Article",
@@ -62,18 +83,8 @@ def schema_org_article(title: str, desc: str, url: str) -> dict:
     }
 
 
-def norm_base_url(url: str) -> str:
-    # 끝 슬래시 제거(일관성 위해)
-    return url[:-1] if url.endswith("/") else url
-
-
 def write_ads_txt(dist: pathlib.Path, default_line: str) -> None:
-    """
-    GitHub Actions 환경 변수 ADS_TXT_LINE 을 우선 사용.
-    로컬/기본 배포 환경에서는 default_line 사용.
-    """
     line = (os.getenv("ADS_TXT_LINE") or default_line).strip()
-    # 관례상 마지막에 개행 1개
     (dist / "ads.txt").write_text(line + "\n", encoding="utf-8")
 
 
@@ -82,9 +93,10 @@ def write_robots_txt(dist: pathlib.Path, base_url: str) -> None:
     (dist / "robots.txt").write_text(robots_txt, encoding="utf-8")
 
 
-def write_sitemap(dist: pathlib.Path, base_url: str, pages_meta: list) -> None:
+def write_sitemap(dist: pathlib.Path, base_url: str, pages_meta: List[Dict]) -> None:
     """
-    items.csv 기반으로 생성된 모든 페이지(URL) + 홈을 수집해 sitemap.xml 생성.
+    Writes sitemap.xml with XML declaration, UTC datetime lastmod.
+    Only target URLs (index + generated pages) are listed.
     """
     urlset = Element("urlset", xmlns="http://www.sitemaps.org/schemas/sitemap/0.9")
 
@@ -98,14 +110,33 @@ def write_sitemap(dist: pathlib.Path, base_url: str, pages_meta: list) -> None:
         SubElement(url, "changefreq").text = changefreq
         SubElement(url, "priority").text = priority
 
-    today_iso = datetime.date.today().isoformat()
-    add_url(f"{base_url}/", lastmod=today_iso, priority="0.8")
+    ts = now_utc_iso()
+    add_url(f"{base_url}/", lastmod=ts, priority="0.8")
 
     for p in pages_meta:
-        add_url(f"{base_url}/{p['path']}", lastmod=today_iso)
+        add_url(f"{base_url}/{p['path']}", lastmod=ts)
 
-    xml_bytes = tostring(urlset, encoding="utf-8", method="xml")
-    (dist / "sitemap.xml").write_bytes(xml_bytes)
+    xml_body = tostring(urlset, encoding="utf-8", method="xml")
+    xml_full = b"<?xml version='1.0' encoding='UTF-8'?>\n" + xml_body
+    (dist / "sitemap.xml").write_bytes(xml_full)
+
+
+def write_soft_redirect(dist: pathlib.Path, from_slug: str, to_url: str) -> None:
+    """
+    Creates OUT/{from_slug}.html that meta-refreshes to to_url.
+    Useful as a temporary guard to avoid hard 404s after slug changes.
+    """
+    html = f"""<!doctype html>
+<html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta http-equiv="refresh" content="0;url={to_url}"/>
+<link rel="canonical" href="{to_url}"/>
+<title>Redirecting…</title>
+</head><body>
+<p>이 페이지는 <a href="{to_url}">여기로 이동</a>했어.</p>
+</body></html>
+"""
+    (dist / f"{from_slug}.html").write_text(html, encoding="utf-8")
 
 
 # ── Main ─────────────────────────────────────────────────────────────────────
@@ -115,24 +146,22 @@ def main() -> None:
         autoescape=select_autoescape(["html", "xml"]),
     )
 
-    # BASE_URL 은 Actions Secrets 로 주입하거나 로컬에선 기본값 사용
     base_url = norm_base_url(os.environ.get("BASE_URL", "https://rinosene.github.io"))
     ensure_dir(OUT)
 
-    pages_meta: list[dict] = []
+    pages_meta: List[Dict] = []
 
-    # ── 페이지 생성: items.csv → 각 상세 페이지 ───────────────────────────────
+    # ── Generate detail pages from items.csv ─────────────────────────────────
     if DATA.exists():
         with open(DATA, encoding="utf-8") as f:
             reader = csv.DictReader(f)
             for row in reader:
                 slug = (row.get("deeplink_slug") or "").strip()
                 if not slug:
-                    # slug 없으면 스킵
                     continue
 
-                title = f"{row.get('keyword','').strip()} | {row.get('entity','').strip()} {row.get('attribute','').strip()}".strip()
-                desc = f"{row.get('entity','').strip()} {row.get('attribute','').strip()} — {row.get('modifier','').strip()} 기준으로 정리했어."
+                title = f"{(row.get('keyword') or '').strip()} | {(row.get('entity') or '').strip()} {(row.get('attribute') or '').strip()}".strip()
+                desc = f"{(row.get('entity') or '').strip()} {(row.get('attribute') or '').strip()} — {(row.get('modifier') or '').strip()} 기준으로 정리했어."
                 url = f"{base_url}/{slug}.html"
                 schema_json = json.dumps(
                     schema_org_article(title, desc, url), ensure_ascii=False, indent=2
@@ -165,11 +194,9 @@ def main() -> None:
                 )
                 (OUT / f"{slug}.html").write_text(html, encoding="utf-8")
                 pages_meta.append({"title": title, "desc": desc, "path": f"{slug}.html"})
-    else:
-        # items.csv 가 없으면 최소한 index 만 생성
-        pass
+    # else: silently proceed with index/aux files only
 
-    # ── 인덱스 페이지 ────────────────────────────────────────────────────────
+    # ── Index page ───────────────────────────────────────────────────────────
     tmpl = env.get_template("index.html")
     index_html = tmpl.render(
         title="AutoSpec",
@@ -184,16 +211,28 @@ def main() -> None:
     )
     (OUT / "index.html").write_text(index_html, encoding="utf-8")
 
-    # ── 크롤러/애드센스 파일 자동 생성 ────────────────────────────────────────
-    # 1) ads.txt
+    # ── Optional soft redirects from data/redirects.csv ──────────────────────
+    # CSV header: old_slug,new_slug
+    if REDIRECTS.exists():
+        with open(REDIRECTS, encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                old_slug = (row.get("old_slug") or "").strip()
+                new_slug = (row.get("new_slug") or "").strip()
+                if not old_slug or not new_slug:
+                    continue
+                to_url = f"{base_url}/{new_slug}.html"
+                write_soft_redirect(OUT, old_slug, to_url)
+
+    # ── Crawler / Ad assets ──────────────────────────────────────────────────
     write_ads_txt(OUT, default_line="google.com, pub-4919301978364078, DIRECT, f08c47fec0942fa0")
-    # 2) robots.txt
     write_robots_txt(OUT, base_url)
-    # 3) sitemap.xml (items.csv 기반 자동 확장)
     write_sitemap(OUT, base_url, pages_meta)
 
     print(f"Generated {len(pages_meta)} pages.")
     print(f"Wrote: {OUT/'index.html'}, {OUT/'ads.txt'}, {OUT/'robots.txt'}, {OUT/'sitemap.xml'}")
+    if REDIRECTS.exists():
+        print("Soft redirects created from data/redirects.csv")
 
 
 if __name__ == "__main__":
