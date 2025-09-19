@@ -1,3 +1,4 @@
+# templates/base.html
 <!doctype html>
 <html lang="ko">
 <head>
@@ -6,10 +7,14 @@
   <title>{{ title }} | AutoSpec</title>
   <meta name="description" content="{{ description }}"/>
   <link rel="canonical" href="{{ canonical }}"/>
+
+  <!-- ✅ Google Search Console 소유권 확인 -->
+  <meta name="google-site-verification" content="ZGzJGBFN7h18CeE2A6c-t9BBgL4CX4YhdisIRqMPgXw" />
+
   <script type="application/ld+json">
   {{ schema_json | safe }}
   </script>
-  
+
   <!-- ✅ Google AdSense 자동광고 스니펫 -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4919301978364078"
           crossorigin="anonymous"></script>
@@ -39,4 +44,3 @@
 </footer>
 </body>
 </html>
-
