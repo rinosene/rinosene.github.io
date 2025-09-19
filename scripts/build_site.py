@@ -13,11 +13,11 @@ AutoSpec site builder
 import os
 import csv
 import json
-import datetime
 import pathlib
 from typing import List, Dict
 from xml.etree.ElementTree import Element, SubElement, tostring
 from jinja2 import Environment, FileSystemLoader, select_autoescape
+import datetime as dt
 
 # ── Paths ────────────────────────────────────────────────────────────────────
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -44,7 +44,7 @@ def read_json_safe(path: pathlib.Path) -> Dict:
 
 def now_utc_iso() -> str:
     # RFC3339 / ISO-8601 UTC like 2025-09-19T05:12:00Z
-    return datetime.datetime.utcnow().replace(microsecond=0).isoformat() + "Z"
+    return dt.datetime.now(dt.UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 
 def norm_base_url(url: str) -> str:
@@ -79,7 +79,7 @@ def schema_org_article(title: str, desc: str, url: str) -> Dict:
         "description": desc,
         "mainEntityOfPage": {"@type": "WebPage", "@id": url},
         "author": {"@type": "Person", "name": "AutoSpec"},
-        "dateModified": datetime.date.today().isoformat(),
+        "dateModified": dt.date.today().isoformat(),
     }
 
 
@@ -180,7 +180,7 @@ def main() -> None:
                     description=desc,
                     canonical=url,
                     schema_json=schema_json,
-                    year=datetime.date.today().year,
+                    year=dt.date.today().year,
                     h1=title,
                     subtitle=desc,
                     item=row,
@@ -190,7 +190,7 @@ def main() -> None:
                     faq_a1=f"{row.get('attribute','')}은(는) {row.get('entity','')}의 핵심 특성을 정의하는 항목이야.",
                     faq_q2=f"{row.get('modifier','')}가 모두에게 최선이야?",
                     faq_a2="아니야. 사용 환경과 목적에 따라 다를 수 있어. 본 페이지는 의사결정을 돕기 위한 가이드야.",
-                    updated=datetime.date.today().isoformat(),
+                    updated=dt.date.today().isoformat(),
                 )
                 (OUT / f"{slug}.html").write_text(html, encoding="utf-8")
                 pages_meta.append({"title": title, "desc": desc, "path": f"{slug}.html"})
@@ -206,7 +206,7 @@ def main() -> None:
             {"@context": "https://schema.org", "@type": "CollectionPage", "name": "AutoSpec"},
             ensure_ascii=False,
         ),
-        year=datetime.date.today().year,
+        year=dt.date.today().year,
         pages=pages_meta,
     )
     (OUT / "index.html").write_text(index_html, encoding="utf-8")
