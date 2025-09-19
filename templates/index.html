@@ -1,10 +1,36 @@
+# templates/index.html
 {% extends "base.html" %}
 {% block content %}
-<h1>AutoSpec — 사양·호환·규격 모음</h1>
-<p class="muted">긴 글 대신 필요한 정보만. 아래 목록에서 찾아봐.</p>
-<ul>
-{% for p in pages %}
-  <li><a href="{{ p['path'] }}">{{ p['title'] }}</a> <span class="muted">— {{ p['desc'] }}</span></li>
-{% endfor %}
-</ul>
+  {% set _ = namespace(_title_set=0) %}
+  {% set title = "Curated by Rino · AutoSpec" %}
+  <script>
+    // 템플릿 변수와 무관하게 브라우저 탭 타이틀을 보장
+    document.title = "Curated by Rino · AutoSpec";
+  </script>
+
+  <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap">
+    <h1 style="margin:0; font-size:28px">Curated by Rino · AutoSpec</h1>
+    <span class="badge">총 {{ pages|length }} 페이지</span>
+  </div>
+  <p class="muted" style="margin-top:6px">CSV에서 생성된 최신 가이드를 모았다. 필요한 항목을 골라 확인하면 된다.</p>
+
+  <div class="hr"></div>
+
+  {% if pages %}
+  <section class="grid cols-3">
+    {% for p in pages %}
+    <article style="border:1px solid var(--bd); border-radius:14px; background:var(--card); overflow:hidden">
+      <a href="{{ p.path }}" style="display:block; padding:18px; text-decoration:none">
+        <h2 style="margin:4px 0 8px; font-size:18px; line-height:1.35">{{ p.title }}</h2>
+        <p class="muted" style="margin:0">{{ p.desc }}</p>
+      </a>
+      <div style="padding:0 18px 18px">
+        <a class="btn" href="{{ p.path }}" aria-label="{{ p.title }} 상세 보기">상세 보기</a>
+      </div>
+    </article>
+    {% endfor %}
+  </section>
+  {% else %}
+    <p class="muted">아직 생성된 페이지가 없다. <code>data/items.csv</code>를 채운 뒤 다시 빌드하면 된다.</p>
+  {% endif %}
 {% endblock %}

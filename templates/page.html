@@ -2,7 +2,6 @@
 {% extends "base.html" %}
 {% block content %}
 
-  <!-- 페이지 헤더 -->
   <header aria-label="문서 머리말" style="margin-bottom:10px">
     <h1 style="margin:0 0 6px; font-size:28px; line-height:1.25">{{ h1 }}</h1>
     <p class="muted" style="margin:0">{{ subtitle }}</p>
@@ -10,7 +9,6 @@
 
   <div class="hr"></div>
 
-  <!-- 핵심 요약 + 추천 구매처 -->
   <section class="grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); align-items:start">
     <article style="border:1px solid var(--bd); border-radius:12px; padding:16px; background:var(--card)">
       <h2 style="margin:0 0 10px; font-size:18px">핵심 요약</h2>
@@ -20,8 +18,7 @@
         <span class="badge" aria-label="권장 스펙">권장</span> {{ item.modifier }}
       </p>
       <p class="muted" style="margin:8px 0 0">
-        아래 가이드는 {{ item.entity }}의 {{ item.attribute }}를 고를 때
-        실수를 줄이고 빠르게 결정하도록 돕기 위해 작성됐어.
+        아래 가이드는 {{ item.entity }}의 {{ item.attribute }}를 고를 때 실수를 줄이고 빠르게 결정하도록 돕기 위해 작성되었다.
       </p>
     </article>
 
@@ -33,31 +30,29 @@
           추천 상품 보러가기
         </a>
         <p class="muted" style="margin:10px 0 0; font-size:13px">
-          제휴 링크야. 가격·재고·혜택은 수시로 변동될 수 있어.
+          제휴 링크이다. 가격·재고·혜택은 수시로 변동될 수 있다.
         </p>
       {% else %}
-        <p class="muted">등록된 제휴 링크가 아직 없어요. 곧 업데이트할게!</p>
+        <p class="muted">등록된 제휴 링크가 아직 없다. 추후 업데이트될 예정이다.</p>
       {% endif %}
     </aside>
   </section>
 
   <div class="hr"></div>
 
-  <!-- 설명(자연어 해설) -->
   <section style="border:1px solid var(--bd); border-radius:12px; padding:16px; background:var(--card)">
     <h2 style="margin:0 0 10px; font-size:18px">왜 이 선택이 좋은가?</h2>
     <p style="margin:0">
       {{ body_paragraph }}
     </p>
     <ul class="muted" style="margin:12px 0 0; padding-left:18px; font-size:14px">
-      <li>사용 환경·예산에 따라 선택은 달라질 수 있어.</li>
-      <li>최신 정보는 판매처 상세 페이지를 꼭 확인해줘.</li>
+      <li>사용 환경과 예산에 따라 선택은 달라질 수 있다.</li>
+      <li>최신 정보는 판매처 상세 페이지를 반드시 확인해야 한다.</li>
     </ul>
   </section>
 
   <div class="hr"></div>
 
-  <!-- FAQ -->
   <section style="border:1px solid var(--bd); border-radius:12px; padding:16px; background:var(--card)">
     <h2 style="margin:0 0 10px; font-size:18px">자주 묻는 질문</h2>
 
@@ -72,7 +67,6 @@
     </details>
   </section>
 
-  <!-- 푸터 메타 -->
   <p class="muted" style="margin-top:12px; font-size:13px">
     문서 업데이트: {{ updated }}
   </p>
